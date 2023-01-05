@@ -2,7 +2,7 @@
 #Programme to Translate text with flask
 """
 
-#import json
+import json
 import os
 from ibm_watson import LanguageTranslatorV3
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
@@ -12,24 +12,35 @@ load_dotenv()
 
 apikey = os.environ['apikey']
 url = os.environ['url']
-authenticator = IAMAuthenticator('apikey')
+authenticator = IAMAuthenticator(apikey)
 language_translator = LanguageTranslatorV3(
     version='2022-12-29',
     authenticator=authenticator
 )
 
-language_translator.set_service_url('url')
+language_translator.set_service_url(url)
 
 language_translator.set_disable_ssl_verification(True)
 
-def english_to_french(Hello):
-    """
-    #write the code here
-    """
-    return 'Bonjour'
+languages = language_translator.list_languages().get_result()
+#print(json.dumps(languages, indent=2))
 
-def french_to_english(Bonjour):
+def english_to_french(englishtext):
     """
-    #write the code here
+    Function to translate englsh to french
     """
-    return 'Hello'
+    translation = language_translator.translate(
+    text=englishtext,
+    model_id='en-fr').get_result()
+#    print(json.dumps(translation, indent=2, ensure_ascii=False))
+    return translation
+
+def french_to_english(frenchtext):
+    """
+    Function to translate french to english
+    """
+    translation = language_translator.translate(
+    text=englishtext,
+    model_id='fr-en').get_result()
+#    print(json.dumps(translation, indent=2, ensure_ascii=False))
+    return translation
